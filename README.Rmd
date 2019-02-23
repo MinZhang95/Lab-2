@@ -1,7 +1,7 @@
 ---
 title: "Lab 2"
 author: "Min Zhang, Hana Lee, Joshua Budi"
-date: "2/20/2019"
+date: "2/23/2019"
 output: html_document
 ---
 
@@ -38,7 +38,8 @@ p
 ```{r, message = FALSE, warning = FALSE}
 p + annotation_scale(location="bl") +
   annotation_north_arrow(location="br")+ 
-  geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),mapping=aes(label=Name))+
+  geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),
+               mapping=aes(label=Name), size = 3)+
   theme_bw()
 ```
 
@@ -46,7 +47,7 @@ p + annotation_scale(location="bl") +
 
 - Helper function to extract one matirix into a single data frame with variables `long`, `lat`, `group`, and `order`.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library("rgeos")
 ozbig <- read_sf("data/gadm36_AUS_shp/gadm36_AUS_1.shp")
 oz_st <- maptools::thinnedSpatialPoly(
