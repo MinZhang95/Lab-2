@@ -9,7 +9,6 @@ Here is the link to our github [repo](https://github.com/MinZhang95/Lab-2)
 
 
 ```{r results='hide', message=FALSE, warning=FALSE} 
-<<<<<<< HEAD
 library("sf")
 library("tidyverse")
 library("purrr")
@@ -73,17 +72,9 @@ ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
 
 # plot the result
 ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
-=======
-install.packages("sf")
-library(sf)
-install.packages("tidyverse")
-library(tidyverse)
-library(purrr)
-library(ggplot2)
-install.packages("ggspatial")
-library(ggspatial)
 
->>>>>>> e2b983ff8b8661665c84f999dfec0ce91dc737fe
+#install.packages("ggspatial")
+library(ggspatial)
 ```
 
 Test our code with another country: China
@@ -107,7 +98,6 @@ ggrepel
 ```
 
 ```{r}
-<<<<<<< HEAD
 chnbig <- read_sf("data/gadm36_CHN_shp/gadm36_CHN_1.shp")
 chn_st <- maptools::thinnedSpatialPoly(
   as(chnbig, "Spatial"), tolerance = 0.1, 
@@ -118,13 +108,10 @@ chn.geometry.flattened <- chn$geometry %>% flatten() %>% flatten()
 chnplus <- chn.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
 chnplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 ```
-=======
-p
-```
+
 
 ```{r results='hide'}
 q <- ggplot()+
   geom_sf_text(mapping=aes)
 ```
 
->>>>>>> e2b983ff8b8661665c84f999dfec0ce91dc737fe
