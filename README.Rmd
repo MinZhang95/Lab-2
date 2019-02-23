@@ -9,6 +9,7 @@ Here is the link to our github [repo](https://github.com/MinZhang95/Lab-2)
 
 
 ```{r results='hide', message=FALSE, warning=FALSE} 
+<<<<<<< HEAD
 library("sf")
 library("tidyverse")
 library("purrr")
@@ -72,11 +73,41 @@ ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
 
 # plot the result
 ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
+=======
+install.packages("sf")
+library(sf)
+install.packages("tidyverse")
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+install.packages("ggspatial")
+library(ggspatial)
+
+>>>>>>> e2b983ff8b8661665c84f999dfec0ce91dc737fe
 ```
 
 Test our code with another country: China
 
+```{r results='hide'}
+p <- ggplot() +
+  geom_sf(data = read_sf("data/ME-GIS/Coastline2.shp"), 
+          colour="grey10", fill="grey90") +
+  geom_sf(data = read_sf("data/ME-GIS/Rivers19.shp"), 
+          colour="steelblue", size=0.3) +
+  geom_sf(data = read_sf("data/ME-GIS/PrimaryRoads.shp"), 
+          size = 0.7, colour="grey30") +
+  geom_sf(data = read_sf("data/ME-GIS/Cities.shp")) +
+  annotation_scale(location="bl") +
+  annotation_north_arrow(location="br")+ 
+  geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),mapping=aes(label=Name))+
+  theme_bw()
+
+ggsflabel::geom_sf_label_repel
+ggrepel
+```
+
 ```{r}
+<<<<<<< HEAD
 chnbig <- read_sf("data/gadm36_CHN_shp/gadm36_CHN_1.shp")
 chn_st <- maptools::thinnedSpatialPoly(
   as(chnbig, "Spatial"), tolerance = 0.1, 
@@ -87,3 +118,13 @@ chn.geometry.flattened <- chn$geometry %>% flatten() %>% flatten()
 chnplus <- chn.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
 chnplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 ```
+=======
+p
+```
+
+```{r results='hide'}
+q <- ggplot()+
+  geom_sf_text(mapping=aes)
+```
+
+>>>>>>> e2b983ff8b8661665c84f999dfec0ce91dc737fe
