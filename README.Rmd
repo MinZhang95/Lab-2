@@ -9,11 +9,16 @@ Here is the link to our github [repo](https://github.com/MinZhang95/Lab-2)
 
 
 ```{r results='hide', message=FALSE, warning=FALSE} 
-library("sf")
-library("tidyverse")
-library("purrr")
-library("dplyr")
+library(sf)
+library(tidyverse)
+library(purrr)
+library(dplyr)
+library(ggspatial)
 ```
+
+#### Part 1: Todo for you: more map elements (slide 7)
+
+- Plot of middle Earth: 
 
 ```{r}
 p <- ggplot() +
@@ -28,23 +33,19 @@ p <- ggplot() +
 p
 ```
 
+- Add labels for the cities, a scale bar, arrow showing North.
 
 ```{r}
-library("maps")
-states <- map_data("state")
-head(states)
-
-michigan <- 
-  states %>% 
-  filter(region=="michigan") %>%
-  group_by(group) %>% 
-  summarize(
-    region = region[1],
-    n = n())
-michigan
-ggplot(states, aes(x=long, y=lat, group=group)) + geom_polygon()
-
+p + annotation_scale(location="bl") +
+  annotation_north_arrow(location="br")+ 
+  geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),mapping=aes(label=Name))+
+  theme_bw()
 ```
+
+#### Part 2: Your Task (slide 16)
+
+- Helper function to extract one matirix into a single data frame with variables `long`, `lat`, `group`, and `order`.
+
 ```{r}
 library("rgeos")
 ozbig <- read_sf("data/gadm36_AUS_shp/gadm36_AUS_1.shp")
@@ -61,7 +62,10 @@ mat2df <- function(mat) {
                    order= 1:nrow(mat))
   df
 }
+```
 
+- Create a dataframe `ozplus` from the `geometry` variable using `purrr` functionality, and plot the result with the given code in the slide 16.
+```{r}
 # flatten oz$geometry twice to obtain a list of matrices
 # this is because we have two layers of lists ahead of matrices
 oz.geometry.flattened <- oz$geometry %>% flatten() %>% flatten()
@@ -73,29 +77,10 @@ ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
 # plot the result
 ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 
-#install.packages("ggspatial")
-library(ggspatial)
+
 ```
 
 Test our code with another country: China
-
-```{r results='hide'}
-p <- ggplot() +
-  geom_sf(data = read_sf("data/ME-GIS/Coastline2.shp"), 
-          colour="grey10", fill="grey90") +
-  geom_sf(data = read_sf("data/ME-GIS/Rivers19.shp"), 
-          colour="steelblue", size=0.3) +
-  geom_sf(data = read_sf("data/ME-GIS/PrimaryRoads.shp"), 
-          size = 0.7, colour="grey30") +
-  geom_sf(data = read_sf("data/ME-GIS/Cities.shp")) +
-  annotation_scale(location="bl") +
-  annotation_north_arrow(location="br")+ 
-  geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),mapping=aes(label=Name))+
-  theme_bw()
-
-ggsflabel::geom_sf_label_repel
-ggrepel
-```
 
 ```{r}
 chnbig <- read_sf("data/gadm36_CHN_shp/gadm36_CHN_1.shp")
@@ -110,8 +95,5 @@ chnplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 ```
 
 
-```{r results='hide'}
-q <- ggplot()+
-  geom_sf_text(mapping=aes)
-```
+
 
