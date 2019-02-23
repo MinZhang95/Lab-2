@@ -5,13 +5,85 @@ date: "2/20/2019"
 output: html_document
 ---
 
+Here is the link to our github [repo](https://github.com/MinZhang95/Lab-2)
+
+
 ```{r results='hide', message=FALSE, warning=FALSE} 
 library("sf")
 library("tidyverse")
 library("purrr")
+library("dplyr")
+```
+
+```{r}
+p <- ggplot() +
+  geom_sf(data = read_sf("data/ME-GIS/Coastline2.shp"), 
+          colour="grey10", fill="grey90") +
+  geom_sf(data = read_sf("data/ME-GIS/Rivers19.shp"), 
+          colour="steelblue", size=0.3) +
+  geom_sf(data = read_sf("data/ME-GIS/PrimaryRoads.shp"), 
+          size = 0.7, colour="grey30") +
+  geom_sf(data = read_sf("data/ME-GIS/Cities.shp")) +
+  theme_bw()
+p
 ```
 
 
 ```{r}
+library("maps")
+states <- map_data("state")
+head(states)
 
+michigan <- 
+  states %>% 
+  filter(region=="michigan") %>%
+  group_by(group) %>% 
+  summarize(
+    region = region[1],
+    n = n())
+michigan
+ggplot(states, aes(x=long, y=lat, group=group)) + geom_polygon()
+
+```
+```{r}
+library("rgeos")
+ozbig <- read_sf("data/gadm36_AUS_shp/gadm36_AUS_1.shp")
+oz_st <- maptools::thinnedSpatialPoly(
+  as(ozbig, "Spatial"), tolerance = 0.1, 
+  minarea = 0.001, topologyPreserve = TRUE)
+oz <- st_as_sf(oz_st)
+
+# helper function turning one of these matrices into a single data frame
+mat2df <- function(mat) {
+  df <- data.frame(long = mat[, 1],
+                   lat  = mat[, 2], 
+                   group= rep(rnorm(1, 0, 10), nrow(mat)), 
+                   order= 1:nrow(mat))
+  df
+}
+
+# flatten oz$geometry twice to obtain a list of matrices
+# this is because we have two layers of lists ahead of matrices
+oz.geometry.flattened <- oz$geometry %>% flatten() %>% flatten()
+
+# create a dataframe ozplus from the geometry variable using purrr
+# map_df applies a function to elements of a list and bind the dataframes together
+ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
+
+# plot the result
+ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
+```
+
+Test our code with another country: China
+
+```{r}
+chnbig <- read_sf("data/gadm36_CHN_shp/gadm36_CHN_1.shp")
+chn_st <- maptools::thinnedSpatialPoly(
+  as(chnbig, "Spatial"), tolerance = 0.1, 
+  minarea = 0.001, topologyPreserve = TRUE)
+chn <- st_as_sf(chn_st)
+
+chn.geometry.flattened <- chn$geometry %>% flatten() %>% flatten()
+chnplus <- chn.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
+chnplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 ```
