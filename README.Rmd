@@ -35,7 +35,7 @@ p
 
 - Add labels for the cities, a scale bar, arrow showing North.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 p + annotation_scale(location="bl") +
   annotation_north_arrow(location="br")+ 
   geom_sf_text(data=read_sf("data/ME-GIS/Cities.shp"),mapping=aes(label=Name))+
@@ -58,29 +58,32 @@ oz <- st_as_sf(oz_st)
 mat2df <- function(mat) {
   df <- data.frame(long = mat[, 1],
                    lat  = mat[, 2], 
-                   group= rep(rnorm(1, 0, 10), nrow(mat)), 
+                   temporary.group = sum(mat[,1]+mat[,2] *nrow(mat) + rnorm(1, 100, 10)), 
                    order= 1:nrow(mat))
   df
 }
 ```
 
-- Create a dataframe `ozplus` from the `geometry` variable using `purrr` functionality, and plot the result with the given code in the slide 16.
+- Create a dataframe `ozplus` from the `geometry` variable using `purrr` functionality, and plot the result with the given code in the slide 16. (Map of Australia)
+
 ```{r}
 # flatten oz$geometry twice to obtain a list of matrices
 # this is because we have two layers of lists ahead of matrices
 oz.geometry.flattened <- oz$geometry %>% flatten() %>% flatten()
 
-# create a dataframe ozplus from the geometry variable using purrr
+
+
+# Create a dataframe ozplus from the geometry variable using purrr
 # map_df applies a function to elements of a list and bind the dataframes together
-ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
+# Instead of temporary.group variable by the function mat2df, 
+# group variable consisting of the index corresponding each matrix will be used.
+ozplus <- oz.geometry.flattened %>% purrr::map_df(.x = ., .id ="group", .f = mat2df)
 
 # plot the result
 ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
-
-
 ```
 
-Test our code with another country: China
+- Test our code with another country: Map of China
 
 ```{r}
 chnbig <- read_sf("data/gadm36_CHN_shp/gadm36_CHN_1.shp")
@@ -90,7 +93,7 @@ chn_st <- maptools::thinnedSpatialPoly(
 chn <- st_as_sf(chn_st)
 
 chn.geometry.flattened <- chn$geometry %>% flatten() %>% flatten()
-chnplus <- chn.geometry.flattened %>% purrr::map_df(.x = ., .f = mat2df)
+chnplus <- chn.geometry.flattened %>% purrr::map_df(.x = ., .id ="group", .f = mat2df)
 chnplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
 ```
 
